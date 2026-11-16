@@ -22,8 +22,12 @@ jobs:
       run: npm ci
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
-    - name: Run Playwright tests
-      run: npx playwright test
+    - name: Run Smoke Tests on Developer Check-In / PR
+      if: github.event_name == 'pull_request' || github.event_name == 'push'
+      run: npm run test:smoke
+    - name: Run Full Suite on Nightly Schedule or Manual Run
+      if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+      run: npm test
     - uses: actions/upload-artifact@v7
       if: ${{ !cancelled() }}
       with:
